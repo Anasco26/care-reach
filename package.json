@@ -1,12 +1,14 @@
 {
   "name": "care-reach",
   "version": "0.1.0",
+  "description": "Clinic Appointment System- A web application developed fo my capstone project as a 3MTT fellow. The application is designed to streamline the appointment scheduling process for clinics, allowing patients to easily book appointments with their healthcare providers. The system also provides features for managing patient information, appointment history, and communication between patients and healthcare providers.",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed:production": "node scripts/seed-production.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.7.1",

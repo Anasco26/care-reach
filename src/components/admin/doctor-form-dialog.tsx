@@ -100,7 +100,7 @@ export function DoctorFormDialog({
       createDoctor.mutate(values, {
         onSuccess: () => {
           toast.success("Doctor added", {
-            description: `Login created: ${values.email} · temporary password Password123@`,
+            description: `Login created for ${values.email}. Share sign-in instructions securely.`,
           });
           onOpenChange(false);
         },
@@ -120,7 +120,7 @@ export function DoctorFormDialog({
           <DialogDescription>
             {doctor
               ? "Update this doctor's practice details."
-              : "New doctors receive the demo password Password123@"}
+              : "A secure temporary password is assigned by the clinic administrator."}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -148,7 +148,7 @@ export function DoctorFormDialog({
                     <FormControl>
                       <Input
                         type="email"
-                        placeholder="doctor@clinic.com"
+                        placeholder="doctor@care-reach.ng"
                         disabled={Boolean(doctor)}
                         {...field}
                       />

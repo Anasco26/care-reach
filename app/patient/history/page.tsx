@@ -10,11 +10,13 @@ import { useAppointments } from "@/hooks/use-appointments";
 import { isUpcoming } from "@/lib/appointment-utils";
 import { useAuth } from "@/contexts/auth-context";
 import type { Appointment } from "@/types";
+import { PatientRatingDialog } from "@/components/appointments/patient-rating-dialog";
 
 export default function PatientHistoryPage() {
   const { user } = useAuth();
   const { data: appointments, isLoading } = useAppointments({ patientId: user?.profileId ?? "" });
   const [viewing, setViewing] = useState<Appointment | null>(null);
+  const [rating, setRating] = useState<Appointment | null>(null);
   const past = (appointments ?? []).filter((a) => !isUpcoming(a));
 
   return (
@@ -28,10 +30,16 @@ export default function PatientHistoryPage() {
         <AppointmentTable
           appointments={past}
           showPatient={false}
-          actions={(a) => <ActionButton onClick={() => setViewing(a)}>View</ActionButton>}
+          actions={(a) => (
+            <>
+              <ActionButton onClick={() => setViewing(a)}>View</ActionButton>
+              {a.status === "COMPLETED" ? <ActionButton onClick={() => setRating(a)}>Rate visit</ActionButton> : null}
+            </>
+          )}
         />
       )}
       <AppointmentDetailDialog appointment={viewing} onOpenChange={(o) => !o && setViewing(null)} />
+      <PatientRatingDialog appointment={rating} patientId={user?.profileId ?? ""} onOpenChange={(o) => !o && setRating(null)} />
     </div>
   );
 }

@@ -157,6 +157,58 @@ export type Database = {
         }
         Relationships: []
       }
+      patient_reviews: {
+        Row: {
+          appointment_id: string
+          comment: string
+          created_at: string
+          doctor_id: string
+          id: string
+          patient_id: string
+          rating: number
+        }
+        Insert: {
+          appointment_id: string
+          comment: string
+          created_at?: string
+          doctor_id: string
+          id?: string
+          patient_id: string
+          rating: number
+        }
+        Update: {
+          appointment_id?: string
+          comment?: string
+          created_at?: string
+          doctor_id?: string
+          id?: string
+          patient_id?: string
+          rating?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_reviews_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: true
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "patient_reviews_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "patient_reviews_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string

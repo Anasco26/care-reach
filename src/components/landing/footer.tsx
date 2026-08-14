@@ -37,17 +37,16 @@ export function Footer() {
           </ul>
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-foreground">Demo accounts</h3>
+          <h3 className="text-sm font-semibold text-foreground">Connect with CareReach</h3>
           <ul className="mt-3 space-y-1 text-sm text-muted-foreground">
-            <li>admin@clinic.com</li>
-            <li>doctor1@clinic.com</li>
-            <li>patient1@clinic.com</li>
-            <li className="pt-1 font-medium text-foreground">Password123@</li>
+            <li>hello@care-reach.ng</li>
+            <li>+234 803 123 4567</li>
+            <li className="pt-1">Instagram · Facebook · LinkedIn</li>
           </ul>
         </div>
       </div>
       <div className="border-t border-border py-5 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} CareReach Clinic. Demo project.
+        © {new Date().getFullYear()} CareReach Clinic. Quality care, within reach.
       </div>
     </footer>
   );

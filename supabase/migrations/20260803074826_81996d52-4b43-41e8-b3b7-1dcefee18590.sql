@@ -149,12 +149,12 @@ INSERT INTO public.specializations (name, description) VALUES
   ('Neurology','Brain, spinal cord and nervous system');
 
 INSERT INTO public.doctors (name, email, phone, specialization_id, experience_years, fee, bio, available, gender)
-SELECT 'Dr. Amelia Hart','doctor1@clinic.com','+234 801 000 0001', s.id, 12, 25000, 'Board-certified cardiologist focused on preventive heart care and arrhythmia management.', true, 'FEMALE' FROM public.specializations s WHERE s.name='Cardiology';
+SELECT 'Dr. Amaka Nwosu','amaka.nwosu@care-reach.ng','+234 801 000 0001', s.id, 12, 25000, 'Cardiologist focused on preventive heart care and arrhythmia management.', true, 'FEMALE' FROM public.specializations s WHERE s.name='Cardiology';
 INSERT INTO public.doctors (name, email, phone, specialization_id, experience_years, fee, bio, available, gender)
-SELECT 'Dr. Julian Reyes','doctor2@clinic.com','+234 801 000 0002', s.id, 8, 15000, 'Dermatologist specialising in medical and cosmetic skin treatments.', true, 'MALE' FROM public.specializations s WHERE s.name='Dermatology';
+SELECT 'Dr. Tunde Adeyemi','tunde.adeyemi@care-reach.ng','+234 801 000 0002', s.id, 8, 15000, 'Dermatologist specialising in medical and cosmetic skin treatments.', true, 'MALE' FROM public.specializations s WHERE s.name='Dermatology';
 INSERT INTO public.doctors (name, email, phone, specialization_id, experience_years, fee, bio, available, gender)
-SELECT 'Dr. Nadia Okafor','doctor3@clinic.com','+234 801 000 0003', s.id, 15, 18000, 'Paediatrician with a gentle approach to childhood development and vaccination care.', true, 'FEMALE' FROM public.specializations s WHERE s.name='Pediatrics';
+SELECT 'Dr. Nadia Okafor','nadia.okafor@care-reach.ng','+234 801 000 0003', s.id, 15, 18000, 'Paediatrician with a gentle approach to childhood development and vaccination care.', true, 'FEMALE' FROM public.specializations s WHERE s.name='Pediatrics';
 INSERT INTO public.doctors (name, email, phone, specialization_id, experience_years, fee, bio, available, gender)
-SELECT 'Dr. Marcus Feld','doctor4@clinic.com','+234 801 000 0004', s.id, 10, 30000, 'Orthopedic surgeon treating sports injuries and joint replacement.', true, 'MALE' FROM public.specializations s WHERE s.name='Orthopedics';
+SELECT 'Dr. Chinedu Eze','chinedu.eze@care-reach.ng','+234 801 000 0004', s.id, 10, 30000, 'Orthopedic surgeon treating sports injuries and joint replacement.', true, 'MALE' FROM public.specializations s WHERE s.name='Orthopedics';
 INSERT INTO public.doctors (name, email, phone, specialization_id, experience_years, fee, bio, available, gender)
-SELECT 'Dr. Priya Anand','doctor5@clinic.com','+234 801 000 0005', s.id, 6, 28000, 'Neurologist with expertise in migraine, epilepsy and movement disorders.', true, 'FEMALE' FROM public.specializations s WHERE s.name='Neurology';
+SELECT 'Dr. Aisha Bello','aisha.bello@care-reach.ng','+234 801 000 0005', s.id, 6, 28000, 'Neurologist with expertise in migraine, epilepsy and movement disorders.', true, 'FEMALE' FROM public.specializations s WHERE s.name='Neurology';

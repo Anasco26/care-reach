@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 const details = [
   { icon: MapPin, label: "Address", value: "14 Harborview Road, Springfield" },
   { icon: Phone, label: "Phone", value: "+234 803 123 4567" },
-  { icon: Mail, label: "Email", value: "hello@carebridge.clinic" },
+  { icon: Mail, label: "Email", value: "hello@care-reach.ng" },
   { icon: Clock, label: "Opening hours", value: "Mon–Sat · 09:00 – 17:00" },
 ];
 

@@ -68,6 +68,18 @@ export interface Appointment {
   createdAt: string;
 }
 
+export interface PatientReview {
+  id: string;
+  appointmentId: string;
+  patientId: string;
+  doctorId: string;
+  patientName: string;
+  doctorName: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+
 export interface DashboardStats {
   totalDoctors: number;
   totalPatients: number;

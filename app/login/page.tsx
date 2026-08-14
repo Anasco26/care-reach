@@ -51,7 +51,7 @@ export default function LoginPage() {
   return (
     <AuthShell
       title="Sign in"
-      description="Use a demo account: admin@clinic.com, doctor1@clinic.com or patient1@clinic.com with password Password123@"
+      description="Sign in to manage your appointments and care with CareReach."
       footer={
         <>
           New here?{" "}

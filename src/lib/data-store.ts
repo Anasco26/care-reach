@@ -6,6 +6,7 @@ import type {
   Doctor,
   Gender,
   Patient,
+  PatientReview,
   Specialization,
 } from "@/types";
 
@@ -326,6 +327,51 @@ export async function updateAppointmentStatus(
 export async function deleteAppointment(id: string) {
   const { error } = await supabase.from("appointments").delete().eq("id", id);
   assertOk(error);
+}
+
+/* ---------- patient reviews ---------- */
+const REVIEW_SELECT = "*, patients(name), doctors(name)";
+
+function mapReview(r: Row): PatientReview {
+  const patient = r["patients"] as { name: string } | null;
+  const doctor = r["doctors"] as { name: string } | null;
+  return {
+    id: r["id"] as string,
+    appointmentId: r["appointment_id"] as string,
+    patientId: r["patient_id"] as string,
+    doctorId: r["doctor_id"] as string,
+    patientName: patient?.name ?? "Patient",
+    doctorName: doctor?.name ?? "Doctor",
+    rating: Number(r["rating"]),
+    comment: r["comment"] as string,
+    createdAt: r["created_at"] as string,
+  };
+}
+
+export async function listReviews(patientId?: string): Promise<PatientReview[]> {
+  let query = supabase.from("patient_reviews").select(REVIEW_SELECT).order("created_at", { ascending: false });
+  if (patientId) query = query.eq("patient_id", patientId);
+  const { data, error } = await query;
+  assertOk(error);
+  return (data ?? []).map(mapReview);
+}
+
+export async function createReview(input: {
+  appointmentId: string;
+  patientId: string;
+  doctorId: string;
+  rating: number;
+  comment: string;
+}) {
+  const { data, error } = await supabase.from("patient_reviews").insert({
+    appointment_id: input.appointmentId,
+    patient_id: input.patientId,
+    doctor_id: input.doctorId,
+    rating: input.rating,
+    comment: input.comment.trim(),
+  }).select(REVIEW_SELECT).single();
+  assertOk(error);
+  return mapReview(data as Row);
 }
 
 /* ---------- dashboard aggregation ---------- */

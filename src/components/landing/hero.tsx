@@ -15,7 +15,7 @@ export function Hero() {
             Book your clinic visit in under a minute
           </h1>
           <p className="mt-5 max-w-lg text-lg text-muted-foreground">
-            CareBridge connects you with specialists across cardiology, dermatology,
+            CareReach connects you with specialists across cardiology, dermatology,
             paediatrics, orthopedics and neurology — with real-time availability and
             instant confirmation.
           </p>

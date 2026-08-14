@@ -25,11 +25,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const DEMO_PASSWORD = "Password123@";
+    const temporaryPassword = process.env.DOCTOR_PASSWORD;
+    if (!temporaryPassword) throw new Error("DOCTOR_PASSWORD is not configured");
     let targetUserId: string | null = null;
     const created = await supabaseAdmin.auth.admin.createUser({
       email: body.email ?? "",
-      password: DEMO_PASSWORD,
+      password: temporaryPassword,
       email_confirm: true,
       user_metadata: { name: body.name ?? "" },
     });
@@ -79,11 +80,7 @@ export async function POST(request: Request) {
 
     if (error) throw new Error(error.message);
 
-    return NextResponse.json({
-      id: doctor.id,
-      email: body.email,
-      temporaryPassword: DEMO_PASSWORD,
-    });
+    return NextResponse.json({ id: doctor.id, email: body.email });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not create doctor account";
     const status = message === "Unauthorized" ? 401 : message === "Forbidden" ? 403 : 500;
