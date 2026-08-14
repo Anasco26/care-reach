@@ -71,6 +71,7 @@ export function DoctorFormDialog({
     defaultValues: empty,
   });
 
+  // Reset the form when the dialog opens.
   useEffect(() => {
     if (!open) return;
     form.reset(
@@ -89,6 +90,11 @@ export function DoctorFormDialog({
         : empty,
     );
   }, [open, doctor, form]);
+
+  function handleOpenChange(next: boolean) {
+    if (!next) setCreatedCredentials(null);
+    onOpenChange(next);
+  }
 
   function submit(values: DoctorValues) {
     if (doctor) {
@@ -110,8 +116,8 @@ export function DoctorFormDialog({
             toast.success("Doctor added", {
               description: `Login created for ${values.email}. Share sign-in instructions securely.`,
             });
+            onOpenChange(false);
           }
-          onOpenChange(false);
         },
         onError: (e) => toast.error(e instanceof Error ? e.message : "Could not add doctor"),
       });
@@ -121,213 +127,23 @@ export function DoctorFormDialog({
   const pending = createDoctor.isPending || updateDoctor.isPending;
 
   return (
-    <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>{doctor ? "Edit doctor" : "Add doctor"}</DialogTitle>
-          <DialogDescription>
-            {doctor
-              ? "Update this doctor's practice details."
-              : "A secure temporary password is assigned by the clinic administrator."}
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Full name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Dr. Jane Doe" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="doctor@care-reach.ng"
-                        disabled={Boolean(doctor)}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone</FormLabel>
-                    <FormControl>
-                      <Input placeholder="0803 123 4567" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="specializationId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Specialization</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select one" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {specializations.map((s) => (
-                          <SelectItem key={s.id} value={s.id}>
-                            {s.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="experienceYears"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Years of experience</FormLabel>
-                    <FormControl>
-                        {(() => {
-                          const { value, ...numberField } = field;
-                          return (
-                            <Input
-                              type="number"
-                              min={0}
-                              {...numberField}
-                              value={value as string | number | readonly string[] | undefined}
-                            />
-                          );
-                        })()}
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              <FormField
-                control={form.control}
-                name="fee"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Consultation fee (₦)</FormLabel>
-                    <FormControl>
-                        {(() => {
-                          const { value, ...numberField } = field;
-                          return (
-                            <Input
-                              type="number"
-                              min={0}
-                              {...numberField}
-                              value={value as string | number | readonly string[] | undefined}
-                            />
-                          );
-                        })()}
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              <FormField
-                control={form.control}
-                name="gender"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Gender</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="FEMALE">Female</SelectItem>
-                        <SelectItem value="MALE">Male</SelectItem>
-                        <SelectItem value="OTHER">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="available"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-3">
-                    <div>
-                      <FormLabel>Accepting patients</FormLabel>
-                      <FormDescription className="text-xs">
-                        Toggle availability for booking
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
-            <FormField
-              control={form.control}
-              name="bio"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Bio</FormLabel>
-                  <FormControl>
-                    <Textarea rows={3} placeholder="Short professional bio" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={pending}>
-                {doctor ? "Save changes" : "Add doctor"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-      </Dialog>
-
-      {createdCredentials && (
-        <Dialog open onOpenChange={(next) => { if (!next) setCreatedCredentials(null); }}>
-          <DialogContent className="sm:max-w-md">
+        {createdCredentials ? (
+          <>
             <DialogHeader>
               <DialogTitle>Doctor account created</DialogTitle>
               <DialogDescription>
-                Share these credentials with the doctor. They can change their password after first sign-in.
+                Share these credentials with the doctor. They can change their password after first
+                sign-in.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div>
                 <p className="mb-1 text-sm font-medium">Email</p>
-                <code className="block rounded-md bg-muted px-3 py-2 text-sm">{createdCredentials.email}</code>
+                <code className="block rounded-md bg-muted px-3 py-2 text-sm">
+                  {createdCredentials.email}
+                </code>
               </div>
               <div>
                 <p className="mb-1 text-sm font-medium">Temporary password</p>
@@ -350,11 +166,209 @@ export function DoctorFormDialog({
               </div>
             </div>
             <DialogFooter>
-              <Button onClick={() => setCreatedCredentials(null)}>Done</Button>
+              <Button
+                onClick={() => {
+                  setCreatedCredentials(null);
+                  onOpenChange(false);
+                }}
+              >
+                Done
+              </Button>
             </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
-    </>
+          </>
+        ) : (
+          <>
+            <DialogHeader>
+              <DialogTitle>{doctor ? "Edit doctor" : "Add doctor"}</DialogTitle>
+              <DialogDescription>
+                {doctor
+                  ? "Update this doctor's practice details."
+                  : "A secure temporary password is assigned by the clinic administrator."}
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Dr. Jane Doe" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            placeholder="doctor@care-reach.ng"
+                            disabled={Boolean(doctor)}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone</FormLabel>
+                        <FormControl>
+                          <Input placeholder="0803 123 4567" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="specializationId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Specialization</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select one" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {specializations.map((s) => (
+                              <SelectItem key={s.id} value={s.id}>
+                                {s.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="experienceYears"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Years of experience</FormLabel>
+                        <FormControl>
+                          {(() => {
+                            const { value, ...numberField } = field;
+                            return (
+                              <Input
+                                type="number"
+                                min={0}
+                                {...numberField}
+                                value={value as string | number | readonly string[] | undefined}
+                              />
+                            );
+                          })()}
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="fee"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Consultation fee (₦)</FormLabel>
+                        <FormControl>
+                          {(() => {
+                            const { value, ...numberField } = field;
+                            return (
+                              <Input
+                                type="number"
+                                min={0}
+                                {...numberField}
+                                value={value as string | number | readonly string[] | undefined}
+                              />
+                            );
+                          })()}
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="gender"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Gender</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="FEMALE">Female</SelectItem>
+                            <SelectItem value="MALE">Male</SelectItem>
+                            <SelectItem value="OTHER">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="available"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-3">
+                        <div>
+                          <FormLabel>Accepting patients</FormLabel>
+                          <FormDescription className="text-xs">
+                            Toggle availability for booking
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch checked={field.value} onCheckedChange={field.onChange} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <FormField
+                  control={form.control}
+                  name="bio"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Bio</FormLabel>
+                      <FormControl>
+                        <Textarea rows={3} placeholder="Short professional bio" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <DialogFooter>
+                  <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={pending}>
+                    {doctor ? "Save changes" : "Add doctor"}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
