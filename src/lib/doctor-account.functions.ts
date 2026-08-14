@@ -32,7 +32,7 @@ export async function createDoctorAccount(input: CreateDoctorInput) {
   });
 
   const payload = (await response.json().catch(() => null)) as
-    | { error?: string }
+    | { error?: string; id?: string; email?: string; temporaryPassword?: string }
     | null;
 
   if (!response.ok) {

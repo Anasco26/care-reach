@@ -80,7 +80,7 @@ export async function POST(request: Request) {
 
     if (error) throw new Error(error.message);
 
-    return NextResponse.json({ id: doctor.id, email: body.email });
+    return NextResponse.json({ id: doctor.id, email: body.email, temporaryPassword });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not create doctor account";
     const status = message === "Unauthorized" ? 401 : message === "Forbidden" ? 403 : 500;

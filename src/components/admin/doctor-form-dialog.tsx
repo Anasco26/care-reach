@@ -1,8 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@/lib/zod-resolver";
 import { z } from "zod";
 import { toast } from "sonner";
+import { Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -60,6 +61,10 @@ export function DoctorFormDialog({
   const { data: specializations = [] } = useSpecializations();
   const createDoctor = useCreateDoctor();
   const updateDoctor = useUpdateDoctor();
+  const [createdCredentials, setCreatedCredentials] = useState<{
+    email: string;
+    password: string;
+  } | null>(null);
 
   const form = useForm<z.input<typeof doctorSchema>, unknown, DoctorValues>({
     resolver: zodResolver(doctorSchema),
@@ -98,22 +103,26 @@ export function DoctorFormDialog({
       );
     } else {
       createDoctor.mutate(values, {
-        onSuccess: () => {
-          toast.success("Doctor added", {
-            description: `Login created for ${values.email}. Share sign-in instructions securely.`,
-          });
+        onSuccess: (data) => {
+          if (data?.temporaryPassword) {
+            setCreatedCredentials({ email: values.email, password: data.temporaryPassword });
+          } else {
+            toast.success("Doctor added", {
+              description: `Login created for ${values.email}. Share sign-in instructions securely.`,
+            });
+          }
           onOpenChange(false);
         },
         onError: (e) => toast.error(e instanceof Error ? e.message : "Could not add doctor"),
       });
-
     }
   }
 
   const pending = createDoctor.isPending || updateDoctor.isPending;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{doctor ? "Edit doctor" : "Add doctor"}</DialogTitle>
@@ -304,6 +313,48 @@ export function DoctorFormDialog({
           </form>
         </Form>
       </DialogContent>
-    </Dialog>
+      </Dialog>
+
+      {createdCredentials && (
+        <Dialog open onOpenChange={(next) => { if (!next) setCreatedCredentials(null); }}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Doctor account created</DialogTitle>
+              <DialogDescription>
+                Share these credentials with the doctor. They can change their password after first sign-in.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <p className="mb-1 text-sm font-medium">Email</p>
+                <code className="block rounded-md bg-muted px-3 py-2 text-sm">{createdCredentials.email}</code>
+              </div>
+              <div>
+                <p className="mb-1 text-sm font-medium">Temporary password</p>
+                <div className="flex items-center gap-2">
+                  <code className="flex-1 rounded-md bg-muted px-3 py-2 text-sm break-all">
+                    {createdCredentials.password}
+                  </code>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => {
+                      navigator.clipboard.writeText(createdCredentials.password);
+                      toast.success("Password copied to clipboard");
+                    }}
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button onClick={() => setCreatedCredentials(null)}>Done</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
   );
 }
