@@ -1,13 +1,27 @@
 import { createClient } from "@supabase/supabase-js";
+import { execFileSync } from "node:child_process";
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+const dbUrl = process.env.SUPABASE_DB_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const adminEmail = process.env.ADMIN_EMAIL;
 const adminPassword = process.env.ADMIN_PASSWORD;
 const doctorPassword = process.env.DOCTOR_PASSWORD;
-if (!url || !serviceKey || !adminEmail || !adminPassword || !doctorPassword) {
-  throw new Error("Set NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ADMIN_EMAIL, ADMIN_PASSWORD and DOCTOR_PASSWORD before seeding.");
+const missing = [
+  ["NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL", url],
+  ["SUPABASE_DB_URL", dbUrl],
+  ["SUPABASE_SERVICE_ROLE_KEY", serviceKey],
+  ["ADMIN_EMAIL", adminEmail],
+  ["ADMIN_PASSWORD", adminPassword],
+  ["DOCTOR_PASSWORD", doctorPassword],
+].filter(([, value]) => !value).map(([name]) => name);
+if (missing.length) {
+  throw new Error(`Production seed is not configured. Add these server-side deployment secrets: ${missing.join(", ")}.`);
 }
+
+console.log("Applying pending Supabase migrations...");
+execFileSync("pnpm", ["dlx", "supabase@latest", "db", "push", "--db-url", dbUrl, "--yes"], { stdio: "inherit" });
+
 const supabase = createClient(url, serviceKey, { auth: { autoRefreshToken: false, persistSession: false } });
 const doctors = [
   ["Dr. Amaka Nwosu", "amaka.nwosu@care-reach.ng", "+234 801 000 0001", "Cardiology", 12, 25000, "FEMALE", "Cardiologist focused on preventive heart care and arrhythmia management."],

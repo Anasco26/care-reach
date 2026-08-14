@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "vercel-build": "next build && pnpm seed:production",
     "start": "next start",
     "lint": "eslint",
     "seed:production": "node scripts/seed-production.mjs"
