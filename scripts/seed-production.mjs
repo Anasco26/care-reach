@@ -9,7 +9,6 @@ const adminPassword = process.env.ADMIN_PASSWORD;
 const doctorPassword = process.env.DOCTOR_PASSWORD;
 const missing = [
   ["NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL", url],
-  ["SUPABASE_DB_URL", dbUrl],
   ["SUPABASE_SERVICE_ROLE_KEY", serviceKey],
   ["ADMIN_EMAIL", adminEmail],
   ["ADMIN_PASSWORD", adminPassword],
@@ -19,8 +18,12 @@ if (missing.length) {
   throw new Error(`Production seed is not configured. Add these server-side deployment secrets: ${missing.join(", ")}.`);
 }
 
-console.log("Applying pending Supabase migrations...");
-execFileSync("pnpm", ["dlx", "supabase@latest", "db", "push", "--db-url", dbUrl, "--yes"], { stdio: "inherit" });
+if (dbUrl) {
+  console.log("Applying pending Supabase migrations...");
+  execFileSync("pnpm", ["dlx", "supabase@latest", "db", "push", "--db-url", dbUrl, "--yes"], { stdio: "inherit" });
+} else {
+  console.log("SUPABASE_DB_URL not set - skipping migration push (apply migrations manually via the Supabase dashboard or CLI).");
+}
 
 const supabase = createClient(url, serviceKey, { auth: { autoRefreshToken: false, persistSession: false } });
 const doctors = [
