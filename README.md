@@ -39,3 +39,13 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 ## Production account seeding
 
 Vercel runs `pnpm vercel-build`, which applies pending Supabase migrations and then seeds production accounts automatically. Configure these as Vercel Production secrets: `SUPABASE_DB_URL` (the URL-encoded Postgres connection string), `NEXT_PUBLIC_SUPABASE_URL` or `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `DOCTOR_PASSWORD`. The process is repeatable, keeps one admin role, and seeds five Nigerian doctor accounts. Credentials are never shown in the application.
+
+Copy `.env.example` to `.env.local` for local development and replace every placeholder with values from Supabase. The service-role key, database URL, and account passwords must remain server-only and must never use the `NEXT_PUBLIC_` prefix.
+
+To seed one admin and one doctor locally, add the values above to `.env.local` and run:
+
+```bash
+pnpm seed
+```
+
+The command is safe to run again: it updates the existing accounts and doctor record instead of creating duplicates. It assumes the Supabase migrations have already been applied.
