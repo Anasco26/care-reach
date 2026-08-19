@@ -11,13 +11,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { patientProfileSchema, type PatientProfileValues } from "@/lib/validations/profile";
-import { usePatient, useUpdatePatient } from "@/hooks/use-patients";
+import { usePatient, usePatientByUserId, useUpdatePatient } from "@/hooks/use-patients";
 import { useAuth } from "@/contexts/auth-context";
 import { ChangePasswordCard } from "@/components/auth/change-password-card";
 
 export default function PatientProfilePage() {
   const { user } = useAuth();
-  const { data: patient } = usePatient(user?.profileId ?? "");
+  const { data: patient } = usePatientByUserId(user?.id ?? "");
   const updatePatient = useUpdatePatient();
 
   const form = useForm<PatientProfileValues, unknown, PatientProfileValues>({

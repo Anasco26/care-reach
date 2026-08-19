@@ -279,18 +279,48 @@ export async function getBookedSlots(
 
 export interface BookingInput {
   doctorId: string;
-  patientId: string;
+  patientId?: string;
   date: string;
   time: string;
   reason: string;
 }
 
 export async function createAppointment(input: BookingInput) {
+  let patientId = input.patientId && input.patientId !== "" ? input.patientId : undefined;
+  
+  if (!patientId) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Please sign in to book an appointment");
+    
+    const { data: existing } = await supabase
+      .from("patients")
+      .select("id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    
+    if (existing) {
+      patientId = existing.id;
+    } else {
+      const { data: patient, error: patientError } = await supabase
+        .from("patients")
+        .insert({
+          user_id: user.id,
+          name: user.user_metadata?.name ?? user.email ?? "",
+          email: user.email ?? "",
+          phone: user.user_metadata?.phone ?? "",
+        })
+        .select("id")
+        .single();
+      if (patientError) throw new Error(patientError.message);
+      patientId = patient.id;
+    }
+  }
+
   const { data, error } = await supabase
     .from("appointments")
     .insert({
       doctor_id: input.doctorId,
-      patient_id: input.patientId,
+      patient_id: patientId,
       date: input.date,
       time: input.time,
       reason: input.reason,

@@ -17,6 +17,14 @@ export function usePatient(id: string) {
   });
 }
 
+export function usePatientByUserId(userId: string) {
+  return useQuery({
+    queryKey: ["patients", "by-user", userId],
+    queryFn: () => store.getPatientByUserId(userId),
+    enabled: Boolean(userId),
+  });
+}
+
 export function useUpdatePatient() {
   const qc = useQueryClient();
   return useMutation({
