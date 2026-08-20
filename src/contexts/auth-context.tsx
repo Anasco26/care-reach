@@ -32,6 +32,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 async function buildSessionUser(session: Session): Promise<SessionUser> {
   const authUser = session.user;
   const metaName = (authUser.user_metadata?.["name"] as string | undefined) ?? "";
+  const metaPhone = (authUser.user_metadata?.["phone"] as string | undefined) ?? "";
 
   const [{ data: roleRows }, { data: profile }] = await Promise.all([
     supabase.from("user_roles").select("role").eq("user_id", authUser.id),
@@ -59,7 +60,25 @@ async function buildSessionUser(session: Session): Promise<SessionUser> {
       .select("id")
       .eq("user_id", authUser.id)
       .maybeSingle();
-    profileId = data?.id ?? "";
+    if (data) {
+      profileId = data.id;
+    } else {
+      // Auto-provision a patient account for users who signed up via email
+      // confirmation (no session at signup) or were created before the
+      // provisioning flow existed. Without this, they have no user_roles
+      // entry and no patients row, so appointment inserts fail RLS.
+      try {
+        await provisionPatientAccount({ name: metaName, phone: metaPhone });
+        const { data: provisioned } = await supabase
+          .from("patients")
+          .select("id")
+          .eq("user_id", authUser.id)
+          .maybeSingle();
+        profileId = provisioned?.id ?? "";
+      } catch {
+        profileId = "";
+      }
+    }
   }
 
   return {
