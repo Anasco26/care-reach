@@ -56,7 +56,7 @@ export function BookingForm({ doctor }: { doctor: Doctor }) {
     createAppointment.mutate(
       {
         doctorId: doctor.id,
-        patientId: user.profileId,
+        patientId: user.profileId || undefined,
         date: values.date,
         time: values.time,
         reason: values.reason,

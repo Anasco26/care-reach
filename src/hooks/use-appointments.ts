@@ -47,7 +47,7 @@ export function useCreateAppointment() {
   const { user } = useAuth();
   const invalidate = useInvalidate();
   return useMutation({
-    mutationFn: (input: store.BookingInput) => store.createAppointment(input, user?.id),
+    mutationFn: (input: store.BookingInput) => store.createAppointment(input, user?.id ?? ""),
     onSuccess: invalidate,
   });
 }
