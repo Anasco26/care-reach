@@ -285,26 +285,28 @@ export interface BookingInput {
   reason: string;
 }
 
-export async function createAppointment(input: BookingInput) {
+export async function createAppointment(input: BookingInput, userId?: string) {
   let patientId = input.patientId && input.patientId !== "" ? input.patientId : undefined;
   
   if (!patientId) {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Please sign in to book an appointment");
+    if (!userId) throw new Error("Please sign in to book an appointment");
     
     const { data: existing } = await supabase
       .from("patients")
       .select("id")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .maybeSingle();
     
     if (existing) {
       patientId = existing.id;
     } else {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || user.id !== userId) throw new Error("Unable to verify your identity");
+      
       const { data: patient, error: patientError } = await supabase
         .from("patients")
         .insert({
-          user_id: user.id,
+          user_id: userId,
           name: user.user_metadata?.name ?? user.email ?? "",
           email: user.email ?? "",
           phone: user.user_metadata?.phone ?? "",

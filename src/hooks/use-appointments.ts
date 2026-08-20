@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as store from "@/lib/data-store";
 import type { AppointmentStatus } from "@/types";
+import { useAuth } from "@/contexts/auth-context";
 
 export function useAppointments(filter?: {
   doctorId?: string;
@@ -43,9 +44,10 @@ function useInvalidate() {
 }
 
 export function useCreateAppointment() {
+  const { user } = useAuth();
   const invalidate = useInvalidate();
   return useMutation({
-    mutationFn: (input: store.BookingInput) => store.createAppointment(input),
+    mutationFn: (input: store.BookingInput) => store.createAppointment(input, user?.id),
     onSuccess: invalidate,
   });
 }
